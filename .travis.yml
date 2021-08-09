@@ -1,0 +1,18 @@
+language: java
+
+jdk:
+  - openjdk14
+
+env:
+  global:
+    - CODECOV_TOKEN='2fcba087-d7fa-4e93-a434-86d5e0bcebda'
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+notifications:
+  email:
+    recipients:
+      - anton.starichenkov@gmail.com
+    on_success: never # default: change
+    on_failure: always # default: always
