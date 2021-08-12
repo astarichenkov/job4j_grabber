@@ -3,12 +3,9 @@ package ru.job4j.quartz;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import static org.quartz.JobBuilder.*;
@@ -16,11 +13,13 @@ import static org.quartz.TriggerBuilder.*;
 import static org.quartz.SimpleScheduleBuilder.*;
 
 public class AlertRabbit {
+    private static final Properties config = new Properties();
+
     public static void main(String[] args) {
 
         try (InputStream in = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
-            Properties config = new Properties();
             config.load(in);
+            int seconds = Integer.parseInt(config.getProperty("rabbit.interval"));
             Class.forName(config.getProperty("driver-class-name"));
             try (Connection connection
                          = DriverManager.getConnection(
@@ -36,7 +35,7 @@ public class AlertRabbit {
                         .usingJobData(data)
                         .build();
                 SimpleScheduleBuilder times = simpleSchedule()
-                        .withIntervalInSeconds(getSecondsFromProps())
+                        .withIntervalInSeconds(seconds)
                         .repeatForever();
                 Trigger trigger = newTrigger()
                         .startNow()
@@ -59,24 +58,13 @@ public class AlertRabbit {
             try (PreparedStatement statement =
                          con.prepareStatement("insert into rabbit(created_date) values (?)")) {
                 statement.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
-                statement.execute();
+                if (!con.isClosed()) {
+                    statement.execute();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
     }
-
-    private static int getSecondsFromProps() {
-        int seconds;
-        try (InputStream in = AlertRabbit.class.getClassLoader()
-                .getResourceAsStream("rabbit.properties")) {
-            Properties config = new Properties();
-            config.load(in);
-            seconds = Integer.parseInt(config.getProperty("rabbit.interval"));
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-        return seconds;
-    }
-
 }
+
