@@ -6,9 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SqlRuDateTimeParser implements DateTimeParser {
+    private static final List<String> months =
+            Arrays.asList("янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек");
+    private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd MM yy HH:mm");
+
     @Override
     public LocalDateTime parse(String parse) {
-        List<String> months = Arrays.asList("янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек");
         String[] arr = parse.replace(",", "").split(" ");
 
         if (parse.contains("сегодня") || parse.contains("вчера")) {
@@ -26,7 +29,7 @@ public class SqlRuDateTimeParser implements DateTimeParser {
         } else {
             for (int i = 0; i < months.size(); i++) {
                 if (parse.contains(months.get(i))) {
-                        arr[1] = arr[1].replace(months.get(i), String.valueOf(i + 1));
+                    arr[1] = arr[1].replace(months.get(i), String.valueOf(i + 1));
                 }
             }
         }
@@ -36,7 +39,6 @@ public class SqlRuDateTimeParser implements DateTimeParser {
             }
         }
         String newDate = arr[0] + " " + arr[1] + " " + arr[2] + " " + arr[3];
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd MM yy HH:mm");
         return LocalDateTime.parse(newDate, dateFormat);
     }
 }
