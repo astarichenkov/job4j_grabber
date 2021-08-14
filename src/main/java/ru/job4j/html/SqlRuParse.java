@@ -58,7 +58,7 @@ public class SqlRuParse implements ru.job4j.grabber.Parse {
             e.printStackTrace();
         }
         Elements desc = doc.select("td.msgBody");
-        String text = desc.toString();
+        String text = desc.text();
         Elements header = doc.select("td.messageHeader");
         String name = header.get(0).text();
         Elements date = doc.select("td.msgFooter");
