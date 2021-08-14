@@ -10,6 +10,10 @@ public class Post {
     private String link;
     private LocalDateTime created;
 
+    public Post(String name) {
+        this.name = name;
+    }
+
     public Post(String name, String link, LocalDateTime created) {
         this.name = name;
         this.link = link;
@@ -17,6 +21,14 @@ public class Post {
     }
 
     public Post(String name, String text, String link, LocalDateTime created) {
+        this.name = name;
+        this.text = text;
+        this.link = link;
+        this.created = created;
+    }
+
+    public Post(int id, String name, String text, String link, LocalDateTime created) {
+        this.id = id;
         this.name = name;
         this.text = text;
         this.link = link;
